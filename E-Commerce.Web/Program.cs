@@ -3,8 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence;
 using Persistence.Data;
+using Persistence.Repositories;
 using Service;
 using Service.MappingProfiles;
+using ServiceAbstraction;
 using System.Reflection;
 
 namespace E_Commerce.Web
@@ -27,6 +29,8 @@ namespace E_Commerce.Web
             });
             builder.Services.AddScoped<IDataSeed, DataSeed>();
             builder.Services.AddAutoMapper(typeof(ServiceAssemblyReference).Assembly);
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IServiceManager, ServiceManager>();
 
             #endregion
 

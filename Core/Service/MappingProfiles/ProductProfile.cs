@@ -12,7 +12,7 @@ namespace Service.MappingProfiles
                 .ForMember(dist => dist.BrandName, Options => Options.MapFrom(src => src.ProductBrand.Name))
                 .ForMember(dist => dist.TypeName, Options => Options.MapFrom(src => src.ProductType.Name));
 
-            CreateMap<ProductType, typeDto>();
+            CreateMap<ProductType, TypeDto>();
             CreateMap<ProductBrand, BrandDto>();
 
         }

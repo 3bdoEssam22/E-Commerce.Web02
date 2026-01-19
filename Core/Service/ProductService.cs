@@ -23,11 +23,11 @@ namespace Service
 
         }
 
-        public async Task<IEnumerable<typeDto>> GetAllTypesAsync()
+        public async Task<IEnumerable<TypeDto>> GetAllTypesAsync()
         {
             var repo = _unitOfWork.GetRepository<ProductType, int>();
             var types = await repo.GetAllAsync();
-            return _mapper.Map<IEnumerable<ProductType>, IEnumerable<typeDto>>(types);
+            return _mapper.Map<IEnumerable<ProductType>, IEnumerable<TypeDto>>(types);
 
         }
 
