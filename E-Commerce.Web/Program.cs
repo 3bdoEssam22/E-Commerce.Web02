@@ -1,14 +1,17 @@
-
 using DomainLayer.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Persistence;
 using Persistence.Data;
+using Service;
+using Service.MappingProfiles;
+using System.Reflection;
 
 namespace E_Commerce.Web
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -23,13 +26,15 @@ namespace E_Commerce.Web
                 Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
             builder.Services.AddScoped<IDataSeed, DataSeed>();
+            builder.Services.AddAutoMapper(typeof(ServiceAssemblyReference).Assembly);
+
             #endregion
 
             var app = builder.Build();
 
             using var scoope = app.Services.CreateScope();
             var objectOfDataSeed = scoope.ServiceProvider.GetRequiredService<IDataSeed>();
-            objectOfDataSeed.DataSeed();
+            await objectOfDataSeed.DataSeedAsync();
 
             #region Configure the HTTP request pipeline.
 

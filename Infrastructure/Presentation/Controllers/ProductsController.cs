@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DomainLayer.Contracts
+namespace Presentation.Controllers
 {
-    public interface IDataSeed
+    public class ProductsController /*: ControllerBase*/
     {
-        Task DataSeedAsync();
     }
 }
