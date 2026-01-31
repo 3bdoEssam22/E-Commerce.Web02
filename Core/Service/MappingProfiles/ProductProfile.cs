@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using DomainLayer.Models;
-using Shared.DataTtansferObjects;
+using DomainLayer.Models.ProductModule;
+using Shared.DataTtansferObjects.ProductModuleDto;
 
 namespace Service.MappingProfiles
 {
@@ -10,7 +10,8 @@ namespace Service.MappingProfiles
         {
             CreateMap<Product, ProductDto>()
                 .ForMember(dist => dist.BrandName, Options => Options.MapFrom(src => src.ProductBrand.Name))
-                .ForMember(dist => dist.TypeName, Options => Options.MapFrom(src => src.ProductType.Name));
+                .ForMember(dist => dist.TypeName, Options => Options.MapFrom(src => src.ProductType.Name))
+                .ForMember(dist => dist.PictureUrl, Options => Options.MapFrom<PictureUrlResolver>());
 
             CreateMap<ProductType, TypeDto>();
             CreateMap<ProductBrand, BrandDto>();

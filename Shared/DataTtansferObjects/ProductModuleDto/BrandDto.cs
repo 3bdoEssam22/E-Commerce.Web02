@@ -1,5 +1,4 @@
-﻿
-namespace Shared.DataTtansferObjects
+﻿namespace Shared.DataTtansferObjects.ProductModuleDto
 {
     public class BrandDto
     {

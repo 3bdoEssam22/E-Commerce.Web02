@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
 using DomainLayer.Contracts;
-using DomainLayer.Models;
+using DomainLayer.Exceptions;
+using DomainLayer.Models.ProductModule;
+using Service.Specifications;
 using ServiceAbstraction;
-using Shared.DataTtansferObjects;
+using Shared;
+using Shared.DataTtansferObjects.ProductModuleDto;
 
 namespace Service
 {
@@ -15,11 +18,15 @@ namespace Service
             return _mapper.Map<IEnumerable<ProductBrand>, IEnumerable<BrandDto>>(brands);
         }
 
-        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
+        public async Task<PaginatedResult<ProductDto>> GetAllProductsAsync(ProductQueryParams queryParams)
         {
+            var Specifications = new ProductWithBrandAndTypeSpecification(queryParams);
             var repo = _unitOfWork.GetRepository<Product, int>();
-            var products = await repo.GetAllAsync();
-            return _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDto>>(products);
+            var AllProducts = await repo.GetAllAsync(Specifications);
+            var Data = _mapper.Map<IEnumerable<Product>, IEnumerable<ProductDto>>(AllProducts);
+            var countSpecifications = new CountSpecifications(queryParams);
+            var totalCount = await repo.CountAsync(countSpecifications);
+            return new PaginatedResult<ProductDto>(queryParams.PageIndex, AllProducts.Count(), totalCount, Data);
 
         }
 
@@ -33,8 +40,12 @@ namespace Service
 
         public async Task<ProductDto> GetProductByIdAsync(int id)
         {
+            var Specifications = new ProductWithBrandAndTypeSpecification(id);
             var repo = _unitOfWork.GetRepository<Product, int>();
-            var product = await repo.GetByIdAsync(id);
+            var product = await repo.GetByIdAsync(Specifications);
+            if(product is null)
+                throw new ProductNotFoundException(id);
+
             return _mapper.Map<Product, ProductDto>(product);
         }
     }

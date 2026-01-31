@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ServiceAbstraction;
-using Shared.DataTtansferObjects;
+using Shared;
+using Shared.DataTtansferObjects.ProductModuleDto;
 
 namespace Presentation.Controllers
 {
@@ -11,9 +12,9 @@ namespace Presentation.Controllers
         //Get All Products
         // Get BaseUrl/api/Products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProducts()
+        public async Task<ActionResult<PaginatedResult<ProductDto>>> GetAllProducts([FromQuery] ProductQueryParams queryParams)
         {
-            var Products = await _serviceManager.ProductService.GetAllProductsAsync();
+            var Products = await _serviceManager.ProductService.GetAllProductsAsync(queryParams);
             return Ok(Products);
         }
 

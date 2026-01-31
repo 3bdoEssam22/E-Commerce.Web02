@@ -1,4 +1,8 @@
 using DomainLayer.Contracts;
+using E_Commerce.Web.CustomMiddlewares;
+using E_Commerce.Web.Extensions;
+using E_Commerce.Web.Factories;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence;
@@ -7,6 +11,7 @@ using Persistence.Repositories;
 using Service;
 using Service.MappingProfiles;
 using ServiceAbstraction;
+using Shared.ErrorsModels;
 using System.Reflection;
 
 namespace E_Commerce.Web
@@ -21,34 +26,30 @@ namespace E_Commerce.Web
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-            builder.Services.AddDbContext<StoreDbContext>(Options =>
-            {
-                Options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-            });
-            builder.Services.AddScoped<IDataSeed, DataSeed>();
-            builder.Services.AddAutoMapper(typeof(ServiceAssemblyReference).Assembly);
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IServiceManager, ServiceManager>();
+
+            builder.Services.AddInfrastuctureServices(builder.Configuration);
+            builder.Services.AddSwaggerServices();
+            builder.Services.AddApplicationServices();
+            builder.Services.AddWebApplicationServices();
+
 
             #endregion
 
             var app = builder.Build();
 
-            using var scoope = app.Services.CreateScope();
-            var objectOfDataSeed = scoope.ServiceProvider.GetRequiredService<IDataSeed>();
-            await objectOfDataSeed.DataSeedAsync();
+            await app.SeedDataBase();
 
             #region Configure the HTTP request pipeline.
 
+            app.UseCustomExceptionMiddleware();
+
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerMiddleware();
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
 
             app.UseAuthorization();
 
