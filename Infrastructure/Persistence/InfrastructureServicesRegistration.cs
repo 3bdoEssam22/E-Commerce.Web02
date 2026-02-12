@@ -22,9 +22,10 @@ namespace Persistence
             Services.AddScoped<IDataSeed, DataSeed>();
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
             Services.AddScoped<IBasketRepository, BasketRepository>();
+            Services.AddScoped<ICasheRepository, CasheRepository>();
             Services.AddSingleton<IConnectionMultiplexer>((_) =>
             {
-                return ConnectionMultiplexer.Connect(Configuration.GetConnectionString("RedisConnectionString"));
+                return ConnectionMultiplexer.Connect(Configuration.GetConnectionString("RedisConnectionString")!);
             });
             Services.AddDbContext<StoreIdentityDbContext>(Options =>
             {

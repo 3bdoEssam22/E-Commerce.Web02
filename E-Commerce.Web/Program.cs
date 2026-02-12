@@ -1,18 +1,6 @@
-using DomainLayer.Contracts;
-using E_Commerce.Web.CustomMiddlewares;
 using E_Commerce.Web.Extensions;
-using E_Commerce.Web.Factories;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Persistence;
-using Persistence.Data;
-using Persistence.Repositories;
 using Service;
-using Service.MappingProfiles;
-using ServiceAbstraction;
-using Shared.ErrorsModels;
-using System.Reflection;
 
 namespace E_Commerce.Web
 {
@@ -31,7 +19,7 @@ namespace E_Commerce.Web
             builder.Services.AddSwaggerServices();
             builder.Services.AddApplicationServices();
             builder.Services.AddWebApplicationServices();
-
+            builder.Services.AddJWTService(builder.Configuration);
 
             #endregion
 
@@ -50,7 +38,8 @@ namespace E_Commerce.Web
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

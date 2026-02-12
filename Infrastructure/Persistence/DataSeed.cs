@@ -1,5 +1,6 @@
 ﻿using DomainLayer.Contracts;
 using DomainLayer.Models.IdentityModule;
+using DomainLayer.Models.OrderModule;
 using DomainLayer.Models.ProductModule;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,14 +20,14 @@ namespace Persistence
             try
             {
                 var PendingMigrations = await _dbContext.Database.GetPendingMigrationsAsync();
-                if (!PendingMigrations.Any())
+                if (PendingMigrations.Any())
                 {
                     await _dbContext.Database.MigrateAsync();
                 }
 
                 if (!_dbContext.ProductTypes.Any())
                 {
-                    var productTypesData = File.OpenRead(@"..\Infrastructure\Persistence\Data\DataSeed\types.json");
+                    using var productTypesData = File.OpenRead(@"..\Infrastructure\Persistence\Data\DataSeed\types.json");
                     var productTypes = await JsonSerializer.DeserializeAsync<List<ProductType>>(productTypesData);
                     if (productTypes is not null && productTypes.Any())
                     {
@@ -36,7 +37,7 @@ namespace Persistence
 
                 if (!_dbContext.ProductBrands.Any())
                 {
-                    var productBrandData = File.OpenRead(@"..\Infrastructure\Persistence\Data\DataSeed\brands.json");
+                    using var productBrandData = File.OpenRead(@"..\Infrastructure\Persistence\Data\DataSeed\brands.json");
                     var productBrands = await JsonSerializer.DeserializeAsync<List<ProductBrand>>(productBrandData);
                     if (productBrands is not null && productBrands.Any())
                     {
@@ -46,13 +47,24 @@ namespace Persistence
 
                 if (!_dbContext.Products.Any())
                 {
-                    var productData = File.OpenRead(@"..\Infrastructure\Persistence\Data\DataSeed\products.json");
+                    using var productData = File.OpenRead(@"..\Infrastructure\Persistence\Data\DataSeed\products.json");
                     var products = await JsonSerializer.DeserializeAsync<List<Product>>(productData);
                     if (products is not null && products.Any())
                     {
                         await _dbContext.AddRangeAsync(products);
                     }
                 }
+
+                if (!_dbContext.Set<DeliveryMethod>().Any())
+                {
+                    using var DeliveryMethodData = File.OpenRead(@"..\Infrastructure\Persistence\Data\DataSeed\delivery.json");
+                    var DeliveryMethods = await JsonSerializer.DeserializeAsync<List<DeliveryMethod>>(DeliveryMethodData);
+                    if (DeliveryMethods is not null && DeliveryMethods.Any())
+                    {
+                        await _dbContext.Set<DeliveryMethod>().AddRangeAsync(DeliveryMethods);
+                    }
+                }
+
 
                 await _dbContext.SaveChangesAsync();
             }
@@ -107,3 +119,4 @@ namespace Persistence
         }
     }
 }
+
